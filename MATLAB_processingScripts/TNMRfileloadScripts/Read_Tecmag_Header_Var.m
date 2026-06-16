@@ -26,12 +26,13 @@ if exist(filename,'file')
         % non-whitespace/non-control combo of characters
         for ii=1:Number_var
             Var_name=Var_names{ii};
-            pattern=[Var_name,'[\s\x00-\x1F]+','[^\s\x00-\x1F]+'];
+%             pattern=[Var_name,'[\s\x00-\x1F]+','[^\s\x00-\x1F]+'];
+            pattern=[Var_name,'[\s\x00-\x1F]+','(=|\d)','[^\s\x00-\x1F]+'];
             matches=regexp(fcontent,pattern,'match');
             matches=char([matches{:}].'); %convert from str to char
-            matches(1,:)=[];  % we can throw out the first match; I think 
-                            % this pertains to something basic about the
-                            % sequence...
+%             matches(1,:)=[];  % we can throw out the first match; I think 
+%                             % this pertains to something basic about the
+%                             % sequence...
 
             % Now, for each identified match, ID if it's a mathematical
             % expression or a value, and save in either tempexprs or

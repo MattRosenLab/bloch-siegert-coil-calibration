@@ -178,6 +178,6 @@ if sum(~BSvalid)>0
 end
 title('Measured B_1 vs Amplitude Setting'); 
 xlabel('F3 ampl');
-ylabel('B_1 (Hz)');
+ylabel('B_1 [Hz]');
 
 end
