@@ -1,4 +1,4 @@
- function [w1_Hz,Ampls,Rsq] = BSXcoilCal 
+ function [B1_uT,Ampls,Rsq] = BSXcoilCal 
 
 % Initially written 2/10/2025 by DK
 % Updated 2/13/2025 by DK
@@ -114,8 +114,9 @@ for ii=1:size(CI_BS,1)
     end
 end
 
-% Finally, calculate omega_1 (in Hz) using the relevant equation
-disp('Calculating the B1 in Hz at each amplitude setting...')
+% Finally, calculate omega_1 (in Hz) using the relevant equation, then the
+% B1 in units of µT (assuming we are detecting on 1H)
+disp('Calculating the B1 in µT at each amplitude setting...')
 
 % Calculate offset difference between 1H and both the positive and negative
 % X-nuclear frequencies
@@ -133,6 +134,12 @@ CI_w1_Hz=sqrt(CI_BS_Hz*2.*repmat(DoffEff,numel(Ampls),2));
 CI_w1_Hz_neg=w1_Hz-squeeze(CI_w1_Hz(:,1));
 CI_w1_Hz_pos=squeeze(CI_w1_Hz(:,2))-w1_Hz;
 
+% Convert outputs to µT
+gammaBar1H=42.577;  %gyromagnetic ratio of 1H, Hz/uT
+B1_uT=w1_Hz./gammaBar1H;
+CI_B1_uT_neg=CI_w1_Hz_neg./gammaBar1H;
+CI_B1_uT_pos=CI_w1_Hz_pos./gammaBar1H;
+
 % Identify points where the BS shift assumptions might be invalid
 % BSthresh=5;
 % BSvalid=(abs(w1_Hz*BSthresh)<=abs(offsetsHz));
@@ -146,16 +153,28 @@ if sum(~BSvalid)>0
 end
 
 % Plot results
-figure; errorbar(Ampls(BSvalid),w1_Hz(BSvalid),...
-    CI_w1_Hz_neg(BSvalid),CI_w1_Hz_pos(BSvalid),'bo'); 
+figure; errorbar(Ampls(BSvalid),B1_uT(BSvalid),...
+    CI_B1_uT_neg(BSvalid),CI_B1_uT_pos(BSvalid),'bo'); 
 if sum(~BSvalid)>0
-    hold on; errorbar(Ampls(~BSvalid),w1_Hz(~BSvalid),...
-        CI_w1_Hz_neg(~BSvalid),CI_w1_Hz_pos(~BSvalid),'ro');
+    hold on; errorbar(Ampls(~BSvalid),B1_uT(~BSvalid),...
+        CI_B1_uT_neg(~BSvalid),CI_B1_uT_pos(~BSvalid),'ro');
     leglbls={'Bloch-Siegert valid','Bloch-Siegert invalid'};
     legend(leglbls,'Location','southeast');
 end
 title('Measured B_1 vs Amplitude Setting'); 
 xlabel('F3 ampl');
-ylabel('B_1 (Hz)');
+ylabel('B_1 [\muT]');
+
+% figure; errorbar(Ampls(BSvalid),w1_Hz(BSvalid),...
+%     CI_w1_Hz_neg(BSvalid),CI_w1_Hz_pos(BSvalid),'bo'); 
+% if sum(~BSvalid)>0
+%     hold on; errorbar(Ampls(~BSvalid),w1_Hz(~BSvalid),...
+%         CI_w1_Hz_neg(~BSvalid),CI_w1_Hz_pos(~BSvalid),'ro');
+%     leglbls={'Bloch-Siegert valid','Bloch-Siegert invalid'};
+%     legend(leglbls,'Location','southeast');
+% end
+% title('Measured B_1 vs Amplitude Setting'); 
+% xlabel('F3 ampl');
+% ylabel('B_1 (Hz)');
 
 end
