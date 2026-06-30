@@ -10,11 +10,11 @@ if iscell(lineval)
     lineval=lineval{:};
 end
 
-% Remove any whitespace/control characters
-lineval=lineval(find(~isstrprop(lineval,'cntrl')&~isstrprop(lineval,'wspace')));
-
-% ID units and convert to appropriate double value
 if ischar(lineval)
+    % Remove any whitespace/control characters
+    lineval=lineval(find(~isstrprop(lineval,'cntrl')&~isstrprop(lineval,'wspace')));
+
+    % ID units and convert to appropriate double value
     if contains(lineval,'u')
         val=str2double(strtok(lineval,'u'))*1e-6;
     elseif contains(lineval,'m')
